@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,14 +9,14 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="500dp"
+        android:contentDescription="@string/image_smaple"
         android:src="@drawable/sample"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.52"
-        tools:ignore="MissingConstraints"
-        android:contentDescription="@string/image_smaple" />
+        tools:ignore="MissingConstraints" />
 
     <com.example.text.Graphic.GraphicOverlay
         android:id="@+id/graphic_overlay"
@@ -54,13 +53,13 @@
 
     <Button
         android:id="@+id/btncamera"
-        android:background="@color/colorPrimaryDark"
-        android:textColor="#fff"
-        android:textSize="18sp"
         style="@style/Base.Widget.AppCompat.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
         android:text="@string/camera"
+        android:textColor="#fff"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/btndetect"
@@ -69,13 +68,13 @@
 
     <Button
         android:id="@+id/btndetect"
-        android:background="@color/colorPrimaryDark"
-        android:textColor="#fff"
-        android:textSize="18sp"
         style="@style/Base.Widget.AppCompat.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
         android:text="@string/detect"
+        android:textColor="#fff"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/btncamera"
         app:layout_constraintRight_toRightOf="parent"

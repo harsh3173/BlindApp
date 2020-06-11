@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Text</string>
+    <string name="app_name">Text Recognition</string>
     <string name="recognise_text">Recognise Text</string>
     <string name="detect">Detect</string>
     <string name="sample_ntext">Sample \ntext</string>

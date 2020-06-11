@@ -1,5 +1,7 @@
 package com.example.text
 
+//import android.support.v7.app.AppCompatActivity
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -9,7 +11,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-//import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -18,22 +19,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import androidx.core.content.PermissionChecker
 import com.example.text.Graphic.GraphicOverlay
-import com.example.text.Graphic.TextGraphic
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_main.*
+import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-
-//import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector
-
 
 class MainActivity : AppCompatActivity() {
     private var snapBtn: Button? = null
@@ -43,11 +40,19 @@ class MainActivity : AppCompatActivity() {
     private var imageBitmap: Bitmap? = null
     private val REQUEST_TAKE_PHOTO = 1
 
+
+    private val perms = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
+
     //@BindView(R.id.graphic_overlay)
     var mGraphicOverlay: GraphicOverlay? = null
     var flag: Boolean = false
 
-    private var currentPath : String? = null
+    private var currentPath: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,19 +63,30 @@ class MainActivity : AppCompatActivity() {
         detectBtn = findViewById(R.id.btndetect)
         imageView = findViewById(R.id.imageView)
         txtView = findViewById(R.id.txtview)
+        EasyPermissions.requestPermissions(
+            this,
+            "Permission to Access Camera and Storage is essential for the Apps Functionality!",
+            0,
+            *perms
+        )
 
 //        if (supportActionBar != null)
 //            supportActionBar?.hide()
         btncamera.setOnClickListener(View.OnClickListener { dispatchTakePictureIntent() })
         btndetect.setOnClickListener(View.OnClickListener {
-            if(flag == false){
-                Toast.makeText(this@MainActivity,"Add an image to detect using camera!",Toast.LENGTH_LONG).show()
-            }else {
+            if (flag == false) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Add an image to detect using camera!",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
                 detectTxt()
             }
 
         })
     }
+
 
     private fun dispatchTakePictureIntent() {
         mGraphicOverlay?.clear();
@@ -91,12 +107,16 @@ class MainActivity : AppCompatActivity() {
                         "com.example.text.fileprovider",
                         it
                     )
-                    try{
+                    try {
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                         startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
-                    }catch (e: SecurityException) {
-                        Log.d("Main","Can't get required Permissions!!")
-                        Toast.makeText(this@MainActivity,"Permission Denied!!\nPlease grant permission to access camera and file storage in Settings.",Toast.LENGTH_LONG).show()
+                    } catch (e: SecurityException) {
+                        Log.d("Main", "Can't get required Permissions!!")
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Permission Denied!!\nAccess to Camera and Storage is essential for the Apps Functionality!",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -130,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             imageBitmap = BitmapFactory.decodeFile(currentPath)
-            Log.d("Main","on Activity Result")
+            Log.d("Main", "on Activity Result")
 
             //val extras = data!!.extras
             //val imageBitmap = data.extras?.get("data") as Bitmap
@@ -146,12 +166,12 @@ class MainActivity : AppCompatActivity() {
 
         detector.processImage(image)
             .addOnSuccessListener(OnSuccessListener<FirebaseVisionText> { firebaseVisionText ->
-                Log.d("Main","Success Listener for Firebase!")
+                Log.d("Main", "Success Listener for Firebase!")
                 processTxt(firebaseVisionText)
 
             }).addOnFailureListener(OnFailureListener {
-                    Log.d("Main","Error in Firebase")
-                })
+                Log.d("Main", "Error in Firebase")
+            })
     }
 
 
@@ -194,11 +214,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        Log.d("Main","${text.text} \n")
-        Log.d("Main","${text.textBlocks}")
+        Log.d("Main", "${text.text} \n")
+        Log.d("Main", "${text.textBlocks}")
         txtView?.text = text.text
     }
-
 
 
     companion object {
