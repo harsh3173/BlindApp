@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.content.PermissionChecker
 import com.example.text.Graphic.GraphicOverlay
 import com.example.text.Graphic.TextGraphic
 import com.google.android.gms.tasks.OnFailureListener
@@ -44,10 +45,8 @@ class MainActivity : AppCompatActivity() {
 
     //@BindView(R.id.graphic_overlay)
     var mGraphicOverlay: GraphicOverlay? = null
+    var flag: Boolean = false
 
-
-
-    private var filename : String = "photo"
     private var currentPath : String? = null
 
 
@@ -59,10 +58,18 @@ class MainActivity : AppCompatActivity() {
         detectBtn = findViewById(R.id.btndetect)
         imageView = findViewById(R.id.imageView)
         txtView = findViewById(R.id.txtview)
+
 //        if (supportActionBar != null)
 //            supportActionBar?.hide()
         btncamera.setOnClickListener(View.OnClickListener { dispatchTakePictureIntent() })
-        btndetect.setOnClickListener(View.OnClickListener { detectTxt() })
+        btndetect.setOnClickListener(View.OnClickListener {
+            if(flag == false){
+                Toast.makeText(this@MainActivity,"Add an image to detect using camera!",Toast.LENGTH_LONG).show()
+            }else {
+                detectTxt()
+            }
+
+        })
     }
 
     private fun dispatchTakePictureIntent() {
@@ -84,8 +91,13 @@ class MainActivity : AppCompatActivity() {
                         "com.example.text.fileprovider",
                         it
                     )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                    try{
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                    }catch (e: SecurityException) {
+                        Log.d("Main","Can't get required Permissions!!")
+                        Toast.makeText(this@MainActivity,"Permission Denied!!\nPlease grant permission to access camera and file storage in Settings.",Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -99,6 +111,7 @@ class MainActivity : AppCompatActivity() {
         // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        /* "JPEG_${timeStamp}_",prefix */
         return File.createTempFile(
             "JPEG_${timeStamp}_", /* prefix */
             ".jpg", /* suffix */
@@ -117,9 +130,11 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             imageBitmap = BitmapFactory.decodeFile(currentPath)
+            Log.d("Main","on Activity Result")
 
             //val extras = data!!.extras
             //val imageBitmap = data.extras?.get("data") as Bitmap
+            flag = true
             imageView?.setImageBitmap(imageBitmap)
         }
     }
