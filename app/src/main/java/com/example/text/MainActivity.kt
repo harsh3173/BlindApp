@@ -70,8 +70,6 @@ class MainActivity : AppCompatActivity() {
             *perms
         )
 
-//        if (supportActionBar != null)
-//            supportActionBar?.hide()
         btncamera.setOnClickListener(View.OnClickListener { dispatchTakePictureIntent() })
         btndetect.setOnClickListener(View.OnClickListener {
             if (flag == false) {
