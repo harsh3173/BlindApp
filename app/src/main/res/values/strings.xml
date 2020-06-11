@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Text</string>
+    <string name="recognise_text">Recognise Text</string>
+    <string name="detect">Detect</string>
+    <string name="sample_ntext">Sample \ntext</string>
+    <string name="text_box">Text Box</string>
+    <string name="camera">Camera</string>
+    <string name="image_smaple">Image Smaple</string>
+</resources>
