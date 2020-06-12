@@ -7,7 +7,10 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -17,6 +20,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.example.text.Graphic.GraphicOverlay
@@ -38,7 +42,9 @@ class MainActivity : AppCompatActivity() {
     private var imageView: ImageView? = null
     private var txtView: TextView? = null
     private var imageBitmap: Bitmap? = null
+    private var newBitmap: Bitmap? = null
     private val REQUEST_TAKE_PHOTO = 1
+    private var rotation: Int? = 0
 
 
     private val perms = arrayOf(
@@ -55,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     private var currentPath: String? = null
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -63,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         detectBtn = findViewById(R.id.btndetect)
         imageView = findViewById(R.id.imageView)
         txtView = findViewById(R.id.txtview)
+
         EasyPermissions.requestPermissions(
             this,
             "Permission to Access Camera and Storage is essential for the Apps Functionality!",
@@ -86,6 +94,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun dispatchTakePictureIntent() {
         mGraphicOverlay?.clear();
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
@@ -108,6 +117,7 @@ class MainActivity : AppCompatActivity() {
                     try {
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                         startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+
                     } catch (e: SecurityException) {
                         Log.d("Main", "Can't get required Permissions!!")
                         Toast.makeText(
@@ -120,6 +130,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     //Creates a temp file for the image to store it in orignal resolution.
 
@@ -140,6 +151,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun RotateImage(bitmap: Bitmap): Bitmap {
+        var exifInterface: ExifInterface? = null
+        try {
+            exifInterface = ExifInterface(currentPath!!)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val orientation: Int? =
+            exifInterface?.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED
+            )
+
+        val matrix: Matrix = Matrix()
+        Log.d("Main", "Orientation$orientation\n\n\n\n")
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.setRotate(90F)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.setRotate(180F)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.setRotate(270F)
+        }
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -148,17 +184,16 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             imageBitmap = BitmapFactory.decodeFile(currentPath)
-            Log.d("Main", "on Activity Result")
 
-            //val extras = data!!.extras
-            //val imageBitmap = data.extras?.get("data") as Bitmap
+            newBitmap = RotateImage(imageBitmap!!)
+            Log.d("Main", "Inside on Activity Result")
             flag = true
-            imageView?.setImageBitmap(imageBitmap)
+            imageView?.setImageBitmap(newBitmap)
         }
     }
 
     private fun detectTxt() {
-        val image = FirebaseVisionImage.fromBitmap(imageBitmap!!)
+        val image = FirebaseVisionImage.fromBitmap(newBitmap!!)
         val detector = FirebaseVision.getInstance()
             .onDeviceTextRecognizer
 
