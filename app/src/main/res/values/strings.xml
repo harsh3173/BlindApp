@@ -1,9 +1,11 @@
 <resources>
-    <string name="app_name">Text Recognition</string>
+    <string name="app_name">Blind App</string>
     <string name="recognise_text">Recognise Text</string>
     <string name="detect">Detect</string>
     <string name="sample_ntext">Sample \ntext</string>
     <string name="text_box">Text Box</string>
     <string name="camera">Camera</string>
-    <string name="image_smaple">Image Smaple</string>
+    <string name="image_sample">Image Sample</string>
+    <string name="sample_image">Sample Image</string>
+    <string name="submit">Submit</string>
 </resources>
