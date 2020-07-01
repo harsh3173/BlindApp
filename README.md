@@ -6,4 +6,4 @@ Created a Text Recognition App using Firebase ML kit in Kotlin Language.
 Text Detection
 ![image](https://github.com/Harsh3211/TextRecognition/blob/master/Screen%20Shots/Screenshot_2.png)
 Object Detection
-![image](https://github.com/Harsh3211/TextRecognition/blob/master/Screen%20Shots/Screenshot (101).png)
+![image](https://github.com/Harsh3211/TextRecognition/blob/master/Screen%20Shots/Screenshot_3.png)
